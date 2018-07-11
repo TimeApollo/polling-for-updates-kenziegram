@@ -1,0 +1,16 @@
+DOCTYPE
+  html(lang="en")
+    head
+      meta(charset="UTF-8")
+      meta(name="viewport" content="width=device-width, initial-scale=1.0")
+      meta(http-equiv="X-UA-Compatible" content="ie=edge")
+      title= KenzieGram
+  
+    body
+      h1= "Welcome to Kenziegram!"
+      h2= "Photo Uploaded"
+      form(action="http://localhost:3000")
+        input(type="submit" value="Go Back")
+      -var file = "uploads/" + photo
+      div
+        img(src=(file)  height="100" width="100")

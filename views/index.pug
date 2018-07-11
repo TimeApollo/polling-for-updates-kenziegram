@@ -1,0 +1,22 @@
+DOCTYPE
+  html(lang="en")
+    head
+      meta(charset="UTF-8")
+      meta(name="viewport" content="width=device-width, initial-scale=1.0")
+      meta(http-equiv="X-UA-Compatible" content="ie=edge")
+      title= KenzieGram
+    body
+      h1= 'Welcome to Kenziegram!'
+    
+      form(method="POST" action="" enctype="multipart/form-data" id="myForm")
+        div#fileUpload
+          label(for="file") Select an Image
+          input(type="file" id="file" name="photo")
+        
+        div
+          button(type="submit") Upload Image
+      each photo, index in photos
+        -var file = "uploads/" + photo;
+        div
+          img(src=(file) , alt="" , height="200" , width="200")
+              
