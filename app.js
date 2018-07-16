@@ -10,6 +10,7 @@ const app = express();
 app.set('view engine', 'pug')
 
 app.use(express.static(publicPath));
+app.use(express.json())
 
 const storage = multer.diskStorage({
   destination: function( req , file , cb ){
@@ -21,19 +22,15 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage, dest: path });
 
-const uploadedFiles = []
-
-let firstRun = true;
+let uploadedFiles = []
 
 app.get( '/' , function( req , res ){
   fs.readdir( path , function( err , items ){
-    if( firstRun ){
-      firstRun = false;
-      items.forEach(item => {
-        console.log(item)
-        uploadedFiles.unshift(item)
-      })
-    }
+    uploadedFiles = [] 
+    items.forEach(item => {
+      uploadedFiles.unshift(item)
+    })
+    
     res.render( 'index' , {photos: uploadedFiles});
   })
 })
@@ -42,6 +39,26 @@ app.get( '/' , function( req , res ){
 app.post( "/" , upload.single('photo') , function( request , response , next ){
   uploadedFiles.unshift(request.file.filename);
   response.render( 'load' , {photo: request.file.filename});
+})
+
+app.post( "/latest" , ( req , res , next) => {
+  fs.readdir( path , ( err , items ) => {
+    let modified;
+    let images = [];
+    console.log("right here" , req.body)
+    let lastPostTime = req.body.after;
+    items.forEach( item => {
+      modified = fs.statSync( `public/uploads/${item}` ).mtimeMs;
+      if( modified > req.body.after ){
+        images.push(item);
+        if( modified > lastPostTime ){
+          lastPostTime = modified;
+        }
+      }
+    })
+    res.status(201);
+    res.send( { "images": images , 'lastPostTime' : lastPostTime } );
+  })
 })
 
 app.listen(port , () => {
